@@ -1,0 +1,3 @@
+log_id,item_id,user_id,action_performed,timestamp,modified_attributes
+1,1,1,INSERT,2026-10-03 10:00:00,Registro inicial de equipo en inventario
+2,5,2,UPDATE,2026-10-05 14:30:00,Actualizacion de componentes y perifericos

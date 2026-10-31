@@ -1,0 +1,9 @@
+item_id,internal_code,serial_number,standardized_name,technical_description,brand,model,category_id,location_id
+1,LAB-GEN-01,217A19113,Generador de RF y Audio,"Generador de señales senoidales y moduladas en RF y audio, calibración de etapas y filtros analógicos",BK PRECISION,2005B,2,1
+2,LAB-SCR-01,810MXDMUZ914,Pantalla HD de 50 Pulgadas,"Pantalla HD con conectividad HDMI y red para visualización de esquemáticos",LG,49UK6250PUB,3,1
+3,LAB-GEN-02,GER926275,Generador de Funciones Arbitrario,"Generador DDS de 1 canal, 5 MHz, 20 MSa/s con formas senoidal y cuadrada",INSTEK,AFG-2105,2,1
+4,LAB-PSU-01,GES912967,Fuente de Alimentacion DC,"Fuente triple CD lineal: 2 salidas variables 0-30V y 1 fija 5V",INSTEK,GPS3303,2,1
+5,LAB-PC-01,FL120T2,Computadora de Escritorio Torre,"Estación de trabajo digital para diseño asistido, simulación y programación",DELL,OPTIPLEX 3060,3,2
+6,LAB-BRD-01,SN-REF-006,Pintarrón 240 x 90 cm,"Pizarrón blanco porcelanizado de 240 x 90 cm con marco de aluminio",ESCO,PBB240120,4,1
+7,LAB-OSC-01,C030624,Osciloscopio Digital,"Osciloscopio digital de 2 canales, 30 MHz de ancho de banda y pantalla TFT 7",TEKTRONIX,TBS1032 B,1,1
+8,LAB-SCR-02,SN-REF-008,Pantalla de Proyeccion Motorizada,"Pantalla de proyección retráctil motorizada de 1.52x1.52 m con control remoto",MULTIMEDIA SCREENS,1.52X1.52 M,3,1
