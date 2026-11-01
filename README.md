@@ -5,25 +5,25 @@ Sistema de gestión y base de datos relacional para el control de inventario de 
 ---
 
 ## 👥 Equipo de Trabajo (Team 1)
-* **Product Owner:** Didier Gamboa Angulo[cite: 1]
+* **Product Owner:** Didier Gamboa Angulo
 
-* **Scrum Master:** David Juárez Nava (ID: 2509215)[cite: 1]
+* **Scrum Master:** David Juárez Nava (ID: 2509215)
 
 * **Development Team:** 
-  * David Juárez Nava (ID: 2509215)[cite: 1]
-  * Gener Daniel Pacheco Moo (ID: 2509219)[cite: 1]
-  * Jovanhy Alejandro Solis Escamilla (ID: 2409224)[cite: 1]
-  * Jose Alejandro Juarez Pacheco (ID: 2509213)[cite: 1]
-  * Pedro Enrique Alonzo Jimenez (ID: 2509007)[cite: 1]
+  * David Juárez Nava (ID: 2509215)
+  * Gener Daniel Pacheco Moo (ID: 2509219)
+  * Jovanhy Alejandro Solis Escamilla (ID: 2409224)
+  * Jose Alejandro Juarez Pacheco (ID: 2509213)
+  * Pedro Enrique Alonzo Jimenez (ID: 2509007)
 
 ---
 
 ## 🛠️ Requisitos del Sistema
 Asegúrate de tener instaladas las siguientes herramientas en tu entorno de desarrollo (Windows 10/11)[cite: 9]:
-* **Git y GitHub** (Control de versiones)[cite: 9]
-* **Visual Studio Code** (Editor de código)[cite: 9]
-* **Miniconda / Anaconda** (Entorno virtual de Python)[cite: 9, 11]
-* **PostgreSQL y pgAdmin** (Servidor de base de datos y cliente gráfico)[cite: 9, 12]
+* **Git y GitHub** (Control de versiones)
+* **Visual Studio Code** (Editor de código)
+* **Miniconda / Anaconda** (Entorno virtual de Python)
+* **PostgreSQL y pgAdmin** (Servidor de base de datos y cliente gráfico)
 
 ---
 
