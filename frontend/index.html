@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratory Catalog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mask:#0e3b33; --mask-2:#145044; --mask-3:#1d6b5b;
+  --copper:#c0773a; --copper-soft:#f7ebdf;
+  --bg:#f2f5f4; --card:#fff; --line:#dfe7e4; --ink:#14221e; --muted:#62756f;
+  --ok:#1f8a5b; --warn:#b7791f; --bad:#c0392b; --info:#2b6cb0;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;font-size:15px;line-height:1.5}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--copper);outline-offset:2px}
+
+/* Sidebar */
+aside{width:260px;background:var(--mask);color:#d8ebe6;padding:24px 16px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:12px;align-items:center;padding:0 8px}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:var(--copper);display:grid;place-items:center;color:#fff}
+.brand b{display:block;font-size:17px;color:#fff;line-height:1.2}
+.brand small{color:#8fb8ad;font-size:13px}
+nav{display:flex;flex-direction:column;gap:4px}
+nav button{display:flex;align-items:center;gap:12px;background:none;border:0;color:inherit;padding:11px 12px;border-radius:10px;text-align:left;width:100%;transition:background .15s}
+nav button:hover{background:var(--mask-2)}
+nav button[aria-current=page]{background:var(--mask-3);color:#fff;box-shadow:inset 3px 0 0 var(--copper)}
+nav .n{margin-left:auto;font-size:12.5px;background:rgba(255,255,255,.12);padding:1px 9px;border-radius:99px}
+.foot{margin-top:auto;font-size:13px;color:#8fb8ad;padding:0 8px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e0a040;margin-right:6px}
+.dot.on{background:#4fd18b}
+
+/* Main */
+main{flex:1;min-width:0;padding:32px 40px 48px}
+header.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
+header.top h1{font-size:28px;letter-spacing:-.02em;line-height:1.2}
+header.top p{color:var(--muted);font-size:14.5px}
+.tools{margin-left:auto;display:flex;gap:10px;align-items:center}
+.search{position:relative}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);width:18px;height:18px}
+.search input{padding:10px 14px 10px 38px;border:1px solid var(--line);border-radius:10px;font:inherit;width:260px;background:var(--card)}
+.btn{display:inline-flex;gap:8px;align-items:center;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:500}
+.btn:hover{border-color:var(--mask-3)}
+.btn.spin svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Overview */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;text-align:left;display:flex;flex-direction:column;gap:14px;transition:border-color .15s, transform .15s}
+.stat:hover{border-color:var(--copper);transform:translateY(-2px)}
+.stat .ic{width:44px;height:44px;border-radius:12px;background:var(--mask);color:#fff;display:grid;place-items:center}
+.stat:first-child .ic{background:var(--copper)}
+.stat .num{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.stat .lbl{font-weight:600}
+.stat .desc{color:var(--muted);font-size:13.5px}
+.recent{margin-top:28px}
+.recent h2{font-size:18px;margin-bottom:12px}
+
+/* Table */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:13px 16px;text-align:left;font-size:13.5px;font-weight:600;color:var(--muted);background:#f8faf9;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--ink)}
+th .ar{color:var(--copper);margin-left:4px}
+td{padding:13px 16px;border-bottom:1px solid var(--line);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tbody tr{cursor:pointer;transition:background .1s}
+tbody tr:hover{background:#f3f9f7}
+tbody tr:last-child td{border-bottom:0}
+td.id{color:var(--muted);font-variant-numeric:tabular-nums;width:1%}
+td.main{font-weight:600}
+td.nil{color:#aab8b3}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:500;background:#e8efed;color:#33504a}
+.badge.c1{background:#e0f2ea;color:#18694a}.badge.c2{background:#e3edf8;color:#245b94}
+.badge.c3{background:var(--copper-soft);color:#8a5320}.badge.c4{background:#f3e6f6;color:#7a3a8a}
+.badge.c5{background:#fbe6e3;color:#a02e22}.badge.c6{background:#fcf3d9;color:#8a6410}
+.pager{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.pager .sp{flex:1}
+.pager button{padding:6px 12px;border:1px solid var(--line);background:var(--card);border-radius:8px}
+.pager button:disabled{opacity:.4;cursor:default}
+.empty,.err{padding:56px 24px;text-align:center;color:var(--muted)}
+.empty svg,.err svg{width:40px;height:40px;margin-bottom:8px;color:var(--mask-3)}
+.err{color:var(--bad)} .err svg{color:var(--bad)} .err code{background:#fbe6e3;padding:2px 6px;border-radius:6px}
+.skel{height:14px;border-radius:6px;background:linear-gradient(90deg,#e8eeec,#f4f7f6,#e8eeec);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+
+/* Drawer */
+.veil{position:fixed;inset:0;background:rgba(10,30,26,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+.veil.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,100%);background:var(--card);transform:translateX(100%);transition:transform .25s;z-index:11;display:flex;flex-direction:column;box-shadow:-12px 0 32px rgba(0,0,0,.15)}
+.drawer.show{transform:none}
+.drawer header{padding:22px 24px;background:var(--mask);color:#fff;display:flex;gap:12px;align-items:center}
+.drawer header h3{font-size:19px;line-height:1.3;flex:1}
+.drawer header button{background:rgba(255,255,255,.12);border:0;color:#fff;width:36px;height:36px;border-radius:10px;display:grid;place-items:center}
+.drawer .dbody{padding:8px 24px 28px;overflow:auto}
+.relh{margin-top:28px;font-size:16px;padding-top:18px;border-top:1px solid var(--line)}
+.rel{list-style:none;padding:0;margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.rel li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.rel li span{color:var(--muted);font-size:13.5px;text-align:right}
+.rel .none{color:var(--muted);border-style:dashed;justify-content:center}
+.drawer dt{font-size:13px;color:var(--muted);margin-top:16px}
+.drawer dd{font-weight:500;word-break:break-word}
+
+@media (max-width:860px){
+  body{flex-direction:column}
+  aside{width:100%;height:auto;position:static;padding:16px;gap:14px}
+  nav{flex-direction:row;overflow-x:auto}
+  nav button{width:auto;white-space:nowrap}
+  .foot{display:none}
+  main{padding:20px 16px 40px}
+  .tools{margin-left:0;width:100%} .search{flex:1} .search input{width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="brand">
+    <div class="logo"><svg class="i" id="logo"></svg></div>
+    <div><b>Laboratory Catalog</b><small>Laboratorio de PCB</small></div>
+  </div>
+  <nav id="nav" aria-label="Secciones"></nav>
+  <div class="foot"><span class="dot" id="dot"></span><span id="status">Conectando…</span></div>
+</aside>
+
+<main>
+  <header class="top">
+    <div><h1 id="title"></h1><p id="subtitle"></p></div>
+    <div class="tools">
+      <label class="search" id="searchBox"><svg class="i" id="sIcon"></svg><input id="q" type="search" placeholder="Buscar…" aria-label="Buscar"></label>
+      <button class="btn" id="reload"><svg class="i" id="rIcon"></svg>Actualizar</button>
+    </div>
+  </header>
+  <div id="view"></div>
+</main>
+
+<div class="veil" id="veil"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" style="background:var(--card);color:var(--ink);padding:0;gap:0;position:fixed;width:min(440px,100%)">
+  <header><h3 id="dTitle"></h3><button id="dClose" aria-label="Cerrar"><svg class="i" id="xIcon"></svg></button></header>
+  <div class="dbody" id="dBody"></div>
+</aside>
+
+<script>
+const ICONS={
+  home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  chip:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+  tag:'<path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1"/>',
+  pin:'<path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>',
+  refresh:'<path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  alert:'<path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/>',
+  box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/>'
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24">${ICONS[n]}</svg>`;
+const setIcon = (id,n)=>{const e=document.getElementById(id);e.setAttribute('viewBox','0 0 24 24');e.innerHTML=ICONS[n]};
+setIcon('logo','chip'); setIcon('sIcon','search'); setIcon('rIcon','refresh'); setIcon('xIcon','x');
+
+const SECTIONS=[
+  {id:'catalog-items',label:'Catálogo',icon:'chip',desc:'Componentes, equipo y materiales'},
+  {id:'categories',label:'Categorías',icon:'tag',desc:'Tipos de artículos'},
+  {id:'physical-locations',label:'Ubicaciones',icon:'pin',desc:'Dónde se guarda cada cosa'},
+  {id:'users',label:'Usuarios',icon:'user',desc:'Personas con acceso'},
+  {id:'audit-logs',label:'Historial',icon:'clock',desc:'Movimientos y cambios recientes'}
+];
+const HIDDEN=/pass|hash|token|secret/i;
+const BADGE=/^(status|state|estado|role|rol|type|tipo|action|accion|condition|condicion)/i;
+const PAGE=20;
+
+const LABELS={name:'Nombre',building:'Edificio',lab:'Laboratorio',shelf_cabinet:'Anaquel / estante',__n:'Equipos',
+  email:'Correo',role:'Rol',description:'Descripción',status:'Estado',action:'Acción',
+  created_at:'Creado',updated_at:'Actualizado',quantity:'Cantidad',brand:'Marca',model:'Modelo',serial_number:'No. de serie'};
+// Columnas que apuntan a otra tabla: se muestra el nombre en vez del número
+const LOOK={
+  category_id:{src:'categories',label:'Categoría',text:r=>r.name},
+  location_id:{src:'physical-locations',label:'Ubicación',text:r=>[r.lab,r.shelf_cabinet].filter(Boolean).join(' – ')},
+  user_id:{src:'users',label:'Usuario',text:r=>Object.entries(r).find(([k,v])=>!isId(k)&&!HIDDEN.test(k)&&typeof v==='string')?.[1]}
+};
+// Qué tablas muestran los equipos que les pertenecen
+const REL={'categories':{fk:'category_id',other:'location_id'},'physical-locations':{fk:'location_id',other:'category_id'}};
+function resolve(k,v){
+  const L=LOOK[k]; if(!L||k===state.own||v==null) return null;
+  const src=state.data[L.src]; if(!Array.isArray(src)) return null;
+  const row=src.find(x=>x[k]===v); return row?(L.text(row)||null):null;
+}
+const lbl=k=>k===state.own?'ID':(LOOK[k]?.label||human(k));
+function cell(k,v){
+  if(k==='__n') return v==null?'<span class="nil">—</span>':`<span class="badge ${v?'c1':''}">${v}</span>`;
+  const t=resolve(k,v); return t!=null?esc(t):fmt(k,v);
+}
+
+const state={view:'home',data:{},q:'',sort:null,page:0,loaded:false};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const human=k=>LABELS[k]||(()=>{const s=k.replace(/_/g,' ').replace(/\bid\b/i,'ID');return s.charAt(0).toUpperCase()+s.slice(1)})();
+const isId=k=>/(^id$|_id$)/i.test(k);
+const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%6;return 'c'+(h+1)};
+
+function fmt(k,v,full){
+  if(v===null||v===undefined||v==='') return '<span class="nil">—</span>';
+  if(typeof v==='boolean') return `<span class="badge ${v?'c1':'c5'}">${v?'Sí':'No'}</span>`;
+  if(typeof v==='string' && /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2})?/.test(v)){
+    const d=new Date(v); if(!isNaN(d)) return esc(d.toLocaleString('es-MX',{dateStyle:'medium',...(v.length>10?{timeStyle:'short'}:{})}));
+  }
+  if(typeof v==='object') return esc(JSON.stringify(v));
+  if(BADGE.test(k)) return `<span class="badge ${hue(v)}">${esc(v)}</span>`;
+  return esc(v);
+}
+
+async function load(id){
+  const r=await fetch('/'+id); if(!r.ok) throw new Error((await r.json().catch(()=>({}))).detail||r.statusText);
+  return r.json();
+}
+async function loadAll(){
+  $('reload').classList.add('spin'); let ok=0;
+  await Promise.all(SECTIONS.map(async s=>{
+    try{state.data[s.id]=await load(s.id);ok++}catch(e){state.data[s.id]={error:e.message}}
+  }));
+  $('reload').classList.remove('spin');
+  $('dot').className='dot'+(ok?' on':''); $('status').textContent=ok?'API conectada':'Sin conexión con la API';
+  state.loaded=true; renderNav(); render();
+}
+
+function renderNav(){
+  const items=[{id:'home',label:'Resumen',icon:'home'},...SECTIONS];
+  $('nav').innerHTML=items.map(s=>{
+    const d=state.data[s.id], n=Array.isArray(d)?`<span class="n">${d.length}</span>`:'';
+    return `<button data-v="${s.id}" ${state.view===s.id?'aria-current="page"':''}>${ic(s.icon)}${s.label}${n}</button>`;
+  }).join('');
+}
+
+function render(){
+  const sec=SECTIONS.find(s=>s.id===state.view);
+  $('searchBox').style.display=sec?'':'none';
+  if(!sec){ $('title').textContent='Resumen'; $('subtitle').textContent='Todo el laboratorio de un vistazo'; return renderHome(); }
+  $('title').textContent=sec.label; $('subtitle').textContent=sec.desc;
+  renderTable(sec);
+}
+
+function renderHome(){
+  if(!state.loaded){ $('view').innerHTML=`<div class="grid">${SECTIONS.map(()=>'<div class="stat"><div class="skel" style="height:44px;width:44px"></div><div class="skel" style="height:34px;width:60px"></div></div>').join('')}</div>`; return; }
+  const cards=SECTIONS.map(s=>{
+    const d=state.data[s.id], n=Array.isArray(d)?d.length:'!';
+    return `<button class="stat" data-v="${s.id}"><div class="ic">${ic(s.icon)}</div><div class="num">${n}</div><div><div class="lbl">${s.label}</div><div class="desc">${s.desc}</div></div></button>`;
+  }).join('');
+  $('view').innerHTML=`<div class="grid">${cards}</div>`;
+}
+
+function renderTable(sec){
+  const d=state.data[sec.id];
+  if(!state.loaded) return $('view').innerHTML=`<div class="card">${'<div style="padding:16px"><div class="skel"></div></div>'.repeat(6)}</div>`;
+  if(!Array.isArray(d)) return $('view').innerHTML=`<div class="card err">${ic('alert')}<p><b>No se pudo cargar ${sec.label.toLowerCase()}</b></p><p>${esc(d?.error||'Error desconocido')}</p><p>Revisa que la tabla exista y que la ruta <code>/${sec.id}</code> responda.</p></div>`;
+  if(!d.length) return $('view').innerHTML=`<div class="card empty">${ic('box')}<p><b>Aún no hay registros</b></p><p>Cuando agregues datos en la base, aparecerán aquí.</p></div>`;
+
+  const all=Object.keys(d[0]).filter(k=>!HIDDEN.test(k));
+  const main=all.find(k=>!isId(k));
+  state.own=all[0];
+  const rel=REL[sec.id], items=state.data['catalog-items'];
+  const cols=rel?[...all.slice(0,6),'__n']:all.slice(0,7);
+  let rows=d.map((r,i)=>({...r,__i:i,...(rel&&Array.isArray(items)?{__n:items.filter(x=>x[rel.fk]===r[state.own]).length}:{})}));
+  const q=state.q.trim().toLowerCase();
+  if(q) rows=rows.filter(r=>all.some(k=>String(resolve(k,r[k])??r[k]??'').toLowerCase().includes(q)));
+  if(state.sort){const {k,dir}=state.sort; rows.sort((a,b)=>{const x=a[k],y=b[k]; if(x==y)return 0; if(x==null)return 1; if(y==null)return -1; return (x>y?1:-1)*dir;});}
+  const pages=Math.max(1,Math.ceil(rows.length/PAGE)); state.page=Math.min(state.page,pages-1);
+  const slice=rows.slice(state.page*PAGE,state.page*PAGE+PAGE);
+
+  const head=cols.map(k=>`<th data-k="${k}">${lbl(k)}${state.sort?.k===k?`<span class="ar">${state.sort.dir>0?'↑':'↓'}</span>`:''}</th>`).join('');
+  const body=slice.map(r=>`<tr data-i="${r.__i}">${cols.map(k=>{
+    const v=r[k], cls=k===state.own?'id':k===main?'main':(v==null||v===''?'nil':'');
+    return `<td class="${cls}">${cell(k,v)}</td>`;}).join('')}</tr>`).join('');
+  $('view').innerHTML=`<div class="card"><div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body||`<tr><td colspan="${cols.length}" class="empty" style="white-space:normal">Ningún resultado para “${esc(state.q)}”.</td></tr>`}</tbody></table></div>
+  <div class="pager"><span>${rows.length} registro${rows.length===1?'':'s'}</span><span class="sp"></span>
+  <button id="prev" ${state.page===0?'disabled':''}>Anterior</button><span>${state.page+1} de ${pages}</span><button id="next" ${state.page>=pages-1?'disabled':''}>Siguiente</button></div></div>`;
+  state.cols=all; state.main=main;
+}
+
+function openDrawer(i){
+  const sec=SECTIONS.find(s=>s.id===state.view), r=state.data[sec.id][i];
+  const keys=state.cols;
+  $('dTitle').textContent=String(r[state.main]??sec.label);
+  const rel=REL[sec.id], items=state.data['catalog-items'];
+  let html='<dl>'+keys.map(k=>`<dt>${lbl(k)}</dt><dd>${cell(k,r[k])}</dd>`).join('')+'</dl>';
+  if(rel&&Array.isArray(items)){
+    const mine=items.filter(x=>x[rel.fk]===r[state.own]);
+    const im=Object.keys(items[0]||{}).find(k=>!isId(k)&&!HIDDEN.test(k));
+    html+=`<h4 class="relh">Equipos (${mine.length})</h4><ul class="rel">`+
+      (mine.length?mine.map(x=>`<li><b>${esc(x[im]??'Sin nombre')}</b><span>${esc(resolve(rel.other,x[rel.other])??'')}</span></li>`).join(''):'<li class="none">Todavía no hay equipos aquí</li>')+'</ul>';
+  }
+  $('dBody').innerHTML=html;
+  $('drawer').classList.add('show'); $('veil').classList.add('show'); $('drawer').setAttribute('aria-hidden','false'); $('dClose').focus();
+}
+function closeDrawer(){ $('drawer').classList.remove('show'); $('veil').classList.remove('show'); $('drawer').setAttribute('aria-hidden','true'); }
+
+document.addEventListener('click',e=>{
+  const v=e.target.closest('[data-v]'); if(v){state.view=v.dataset.v;state.q='';state.sort=null;state.page=0;$('q').value='';renderNav();render();return;}
+  const th=e.target.closest('th[data-k]'); if(th){const k=th.dataset.k;state.sort=state.sort?.k===k?{k,dir:-state.sort.dir}:{k,dir:1};render();return;}
+  const tr=e.target.closest('tbody tr[data-i]'); if(tr){openDrawer(+tr.dataset.i);return;}
+  if(e.target.closest('#prev')){state.page--;render();} if(e.target.closest('#next')){state.page++;render();}
+  if(e.target.closest('#dClose')||e.target===$('veil')) closeDrawer();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+$('q').addEventListener('input',e=>{state.q=e.target.value;state.page=0;render()});
+$('reload').addEventListener('click',loadAll);
+
+render(); loadAll();
+</script>
+</body>
+</html>
