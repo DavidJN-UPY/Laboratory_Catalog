@@ -13,7 +13,7 @@ def get_engine():
     keys = ("DB_HOST", "DB_PORT", "DB_NAME", "DB_USER", "DB_PASSWORD")
     missing = [key for key in keys if not os.getenv(key)]
     if missing:
-        raise RuntimeError("Missing.envsettings: "+ ", ".join(missing))
+        raise RuntimeError("Missing .env settings: " + ", ".join(missing))
     
     url=URL.create(
         "postgresql+psycopg2",

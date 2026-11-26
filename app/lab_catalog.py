@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import requests
@@ -57,7 +58,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-API_BASE_URL = "http://127.0.0.1:8000"
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 
 with st.sidebar:
     st.markdown("### 🧭 Exploración")
@@ -88,13 +89,14 @@ try:
         df_cats = pd.DataFrame(res_cats.json())
         df_locs = pd.DataFrame(res_locs.json())
 
-        # Mapear nombres legibles de categoría y ubicación en los ítems
+        # Nombres legibles de categoría y ubicación (se definen siempre, aunque no haya equipos)
+        cat_name_col = 'name' if 'name' in df_cats.columns else df_cats.columns[1]
+        loc_parts = [c for c in ('lab', 'shelf_cabinet') if c in df_locs.columns] or [df_locs.columns[1]]
+        df_locs['ubicacion'] = df_locs[loc_parts].astype(str).agg(' – '.join, axis=1)
+        loc_name_col = 'ubicacion'
         if not df_items.empty:
-            cat_name_col = 'name' if 'name' in df_cats.columns else df_cats.columns[1]
             cat_map = dict(zip(df_cats['category_id'], df_cats[cat_name_col]))
             df_items['categoria_nombre'] = df_items['category_id'].map(cat_map)
-
-            loc_name_col = 'name' if 'name' in df_locs.columns else df_locs.columns[1]
             loc_map = dict(zip(df_locs['location_id'], df_locs[loc_name_col]))
             df_items['ubicacion_nombre'] = df_items['location_id'].map(loc_map)
 
@@ -122,7 +124,7 @@ try:
             # Tabla interactiva con selección de fila
             event_cat = st.dataframe(
                 cats_display,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 on_select="rerun",
                 selection_mode="single-row"
@@ -149,7 +151,7 @@ try:
                     st.caption("👉 Haz clic sobre un equipo específico para ver su ficha técnica:")
                     event_item = st.dataframe(
                         items_filtrados,
-                        use_container_width=True,
+                        width="stretch",
                         hide_index=True,
                         on_select="rerun",
                         selection_mode="single-row"
@@ -158,7 +160,7 @@ try:
                     item_selected_rows = event_item.selection.rows if hasattr(event_item, "selection") else []
                     if item_selected_rows:
                         item_data = items_filtrados.iloc[item_selected_rows[0]]
-                        st.success(f"📌 **Ficha Técnica Detallada:** {item_data.get('name', item_data.get('item_name', 'Equipo'))}")
+                        st.success(f"📌 **Ficha Técnica Detallada:** {item_data.get('standardized_name', 'Equipo')}")
                         st.json(item_data.to_dict())
                 else:
                     st.info("No hay equipos asignados a esta categoría todavía.")
@@ -174,7 +176,7 @@ try:
 
             event_loc = st.dataframe(
                 df_locs,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 on_select="rerun",
                 selection_mode="single-row"
@@ -194,7 +196,7 @@ try:
 
                 items_in_loc = df_items[df_items['location_id'] == loc_id]
                 if not items_in_loc.empty:
-                    st.dataframe(items_in_loc, use_container_width=True, hide_index=True)
+                    st.dataframe(items_in_loc, width="stretch", hide_index=True)
                 else:
                     st.info("No hay equipos asignados a esta ubicación.")
             else:
@@ -215,7 +217,7 @@ try:
                     data=df_items.to_csv(index=False).encode('utf-8'),
                     file_name="catalogo_pcb.csv",
                     mime="text/csv",
-                    use_container_width=True
+                    width="stretch"
                 )
 
             df_show = df_items.copy()
@@ -226,7 +228,7 @@ try:
             st.caption("👉 Haz clic en una fila para ver el desglose completo del equipo:")
             event_all = st.dataframe(
                 df_show,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 on_select="rerun",
                 selection_mode="single-row"
@@ -250,14 +252,14 @@ try:
             res_audit = requests.get(f"{API_BASE_URL}/audit-logs", timeout=3)
             if res_audit.status_code == 200:
                 df_audit = pd.DataFrame(res_audit.json())
-                st.dataframe(df_audit, use_container_width=True, hide_index=True)
+                st.dataframe(df_audit, width="stretch", hide_index=True)
             else:
                 st.error("No se pudo cargar la bitácora de auditoría.")
 
     else:
         st.error("Error al obtener los datos de la API.")
 
-except requests.exceptions.ConnectionError:
+except requests.exceptions.RequestException:
     api_status.error("🔴 API Desconectada")
     st.error("⚠️ No se pudo conectar con el servidor backend.")
     st.info("Asegúrate de tener activa la API: `uvicorn api.main:app --reload`")

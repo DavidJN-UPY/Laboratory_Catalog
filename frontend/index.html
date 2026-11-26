@@ -215,8 +215,19 @@ function fmt(k,v,full){
   return esc(v);
 }
 
+// Si la API sirve esta página (http://127.0.0.1:8000/) se usan rutas relativas.
+// Si se abre desde otro lado (doble clic, Live Server, otro puerto) se apunta a la API en el 8000.
+// Para usar otra API: index.html?api=http://127.0.0.1:9000
+const API_BASE=(new URLSearchParams(location.search).get('api')||
+  ((location.protocol.startsWith('http')&&location.port==='8000')?'':'http://127.0.0.1:8000')).replace(/\/$/,'');
 async function load(id){
-  const r=await fetch('/'+id); if(!r.ok) throw new Error((await r.json().catch(()=>({}))).detail||r.statusText);
+  let r;
+  try{ r=await fetch(API_BASE+'/'+id); }
+  catch{ throw new Error(`No se pudo conectar con la API (${API_BASE||location.origin}). ¿Está encendida?`); }
+  if(!r.ok){
+    const d=(await r.json().catch(()=>({}))).detail;
+    throw new Error(typeof d==='string'?d:(d?JSON.stringify(d):`${r.status} ${r.statusText}`));
+  }
   return r.json();
 }
 async function loadAll(){
@@ -264,11 +275,15 @@ function renderTable(sec){
   const main=all.find(k=>!isId(k));
   state.own=all[0];
   const rel=REL[sec.id], items=state.data['catalog-items'];
-  const cols=rel?[...all.slice(0,6),'__n']:all.slice(0,7);
+  // Los textos largos (p. ej. descripción técnica) solo se ven en el panel de detalle,
+  // así caben en la tabla columnas útiles como Categoría y Ubicación.
+  const avgLen=k=>d.reduce((s,r)=>s+String(r[k]??'').length,0)/d.length;
+  const brief=all.filter(k=>avgLen(k)<=60);
+  const cols=rel?[...brief.slice(0,6),'__n']:brief.slice(0,8);
   let rows=d.map((r,i)=>({...r,__i:i,...(rel&&Array.isArray(items)?{__n:items.filter(x=>x[rel.fk]===r[state.own]).length}:{})}));
   const q=state.q.trim().toLowerCase();
   if(q) rows=rows.filter(r=>all.some(k=>String(resolve(k,r[k])??r[k]??'').toLowerCase().includes(q)));
-  if(state.sort){const {k,dir}=state.sort; rows.sort((a,b)=>{const x=a[k],y=b[k]; if(x==y)return 0; if(x==null)return 1; if(y==null)return -1; return (x>y?1:-1)*dir;});}
+  if(state.sort){const {k,dir}=state.sort; rows.sort((a,b)=>{const x=resolve(k,a[k])??a[k],y=resolve(k,b[k])??b[k]; if(x==y)return 0; if(x==null)return 1; if(y==null)return -1; return (x>y?1:-1)*dir;});}
   const pages=Math.max(1,Math.ceil(rows.length/PAGE)); state.page=Math.min(state.page,pages-1);
   const slice=rows.slice(state.page*PAGE,state.page*PAGE+PAGE);
 

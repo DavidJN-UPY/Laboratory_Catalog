@@ -1,0 +1,15 @@
+# Streamlit lee este archivo cuando se ejecuta desde la raíz del proyecto.
+[server]
+port = 8501            # Streamlit (la API usa el 8000, así no chocan)
+headless = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#c0773a"
+backgroundColor = "#f2f5f4"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#14221e"
+font = "sans serif"

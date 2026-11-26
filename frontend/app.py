@@ -1,8 +1,9 @@
+import os
 import pandas as pd
 import requests
 import streamlit as st
 
-API_BASE_URL = "http://127.0.0.1:8000"
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 HIDDEN = ("pass", "hash", "token", "secret")
 FK_IDS = ("category_id", "location_id")
 SKIP_FORM = ("created", "updated", "timestamp")
@@ -28,6 +29,10 @@ LABELS = {
     "serial_number": "No. de serie",
     "created_at": "Creado",
     "updated_at": "Actualizado",
+    "full_name": "Nombre completo",
+    "action_performed": "Acción",
+    "timestamp": "Fecha",
+    "modified_attributes": "Cambios",
 }
 
 dialog = getattr(st, "dialog", None) or getattr(st, "experimental_dialog", None) or (lambda *a, **k: (lambda f: f))
@@ -200,7 +205,8 @@ def ficha(row, heading=True):
 
 # ---------- Formularios (crear y editar) ----------
 def field(c, default, key):
-    label = lbl(c) + (" *" if c == name_c else "")
+    label = lbl(c) + (" *" if c in required_cols() else "")
+    help_ = "Déjalo vacío y se genera automáticamente." if c == "internal_code" else None
     s = raw_items[c]
     if c in FK_OPTS:
         opts = list(FK_OPTS[c])
@@ -216,7 +222,12 @@ def field(c, default, key):
     txt = "" if py(default) is None else str(default)
     if any(w in c.lower() for w in ("description", "descripcion", "notes", "notas")):
         return st.text_area(label, value=txt, key=key)
-    return st.text_input(label, value=txt, key=key)
+    return st.text_input(label, value=txt, key=key, help=help_)
+
+
+def required_cols():
+    """Campos que la base de datos exige (NOT NULL) y que el usuario debe escribir."""
+    return [c for c in (name_c, "technical_description") if c in raw_items.columns]
 
 
 def item_form(key, defaults=None):
@@ -234,9 +245,13 @@ def item_form(key, defaults=None):
 
 def submit(method, path, values, ok_msg):
     payload = {k: (v.strip() or None) if isinstance(v, str) else py(v) for k, v in values.items()}
-    if payload.get(name_c) is None:
-        st.error(f"El campo «{lbl(name_c)}» es obligatorio.")
+    missing = [lbl(c) for c in required_cols() if payload.get(c) is None]
+    if missing:
+        st.error("Faltan campos obligatorios: " + ", ".join(f"«{m}»" for m in missing))
         return
+    if payload.get("internal_code") is None:
+        # Al crear, la API lo genera; al editar, se conserva el código actual.
+        payload.pop("internal_code", None)
     with st.spinner("Guardando…"):
         ok, res = send(method, path, payload)
     if ok:
@@ -313,7 +328,7 @@ def master_detail(parent, pk_, fk, title, key):
         with cols[n % 3].container(border=True):
             st.markdown(f"**{r[title]}**")
             extra = " | ".join(f"{lbl(k)}: {v}" for k, v in r.items()
-                               if k not in skip and not k.startswith("_") and v is not None)
+                               if k not in skip and not k.startswith("_") and pd.notna(v))
             if extra:
                 st.caption(extra)
             st.caption(f"📦 {int(counts.get(r[pk_], 0))} equipos")
@@ -434,8 +449,19 @@ elif section == "Historial":
         st.error("No se pudo cargar el historial.")
         st.stop()
     q = st.text_input("Buscar", placeholder="Filtrar el historial…", label_visibility="collapsed")
+    logs = logs.copy()
+    if "item_id" in logs.columns and has_cols:
+        logs.insert(1, "Equipo", logs["item_id"].map(dict(zip(raw_items[pk], raw_items[name_c]))))
+    try:
+        users = fetch("users")
+        u_name = text_col(users)
+        if "user_id" in logs.columns and "user_id" in users.columns:
+            logs.insert(2, "Usuario", logs["user_id"].map(dict(zip(users["user_id"], users[u_name]))))
+    except requests.RequestException:
+        pass
     shown = search(logs, q)
     if shown.empty:
         st.info("No hay movimientos que mostrar.")
     else:
-        st.dataframe(pretty(shown), hide_index=True)
+        st.dataframe(pretty(shown.drop(columns=[c for c in ("item_id", "user_id") if c in shown.columns])),
+                     hide_index=True)

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#dfe7e4;font-family:Arial,sans-serif;color:#17232b}
+.terminal{width:1400px;height:820px;margin:30px auto;background:#00002f;border:1px solid #18204d;border-radius:8px;box-shadow:0 18px 42px rgba(15,23,42,.24);overflow:hidden}
+.titlebar{height:34px;background:#0b0b0b;border-bottom:1px solid #202050;display:flex;align-items:center;padding:0 14px}
+.dot{width:11px;height:11px;border-radius:50%;margin-right:7px}
+.red{background:#c0392b}.yellow{background:#d97706}.green{background:#16a34a}
+.caption{margin-left:10px;color:#cfd8ff;font-size:14px;font-weight:600}
+.body{padding:18px 26px;font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:15px;line-height:1.42;color:#e6e6f7}
+.prompt{color:#72e4ff}.command{color:#cbd5ff;font-weight:bold}.muted{color:#b7bfd4}
+.pass{color:#67ff67;font-weight:bold}.fail{color:#ff6b6b;font-weight:bold}.test{color:#f1f1ff}
+.divider{color:#9aa3b8}
+</style>
+</head>
+<body>
+<div class="terminal">
+  <div class="titlebar"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="caption" id="caption">PowerShell - pytest</span></div>
+  <div class="body" id="content"></div>
+</div>
+<script>
+const suite = [
+"============================= test session starts =============================",
+"platform win32 -- Python 3.14.7 -- pytest 9.2.0",
+"collected 20 items",
+"",
+"tests/test_books_client.py::test_root_returns_static_frontend                PASSED",
+"tests/test_books_client.py::test_openapi_available                           PASSED",
+"tests/test_books_client.py::test_catalog_items_endpoint                      PASSED",
+"tests/test_books_client.py::test_categories_endpoint                         PASSED",
+"tests/test_books_client.py::test_locations_endpoint                          PASSED",
+"tests/test_books_client.py::test_users_endpoint                               PASSED",
+"tests/test_books_client.py::test_audit_logs_endpoint                          PASSED",
+"tests/test_books_client.py::test_create_catalog_item                          PASSED",
+"tests/test_books_client.py::test_update_existing_catalog_item                 PASSED",
+"tests/test_books_client.py::test_update_missing_catalog_item                  PASSED",
+"tests/test_books_http.py::test_api_root                                       PASSED",
+"tests/test_books_http.py::test_catalog_items_http                             PASSED",
+"tests/test_books_http.py::test_categories_http                                PASSED",
+"tests/test_books_http.py::test_locations_http                                  PASSED",
+"tests/test_books_http.py::test_users_http                                      PASSED",
+"tests/test_books_http.py::test_audit_logs_http                                PASSED",
+"tests/test_books_http.py::test_create_catalog_item_http                       PASSED",
+"tests/test_books_http.py::test_update_catalog_item_http                        PASSED",
+"tests/test_books_http.py::test_missing_catalog_item_http                       PASSED",
+"tests/test_books_http.py::test_create_catalog_item_requires_name               PASSED",
+"",
+"========================= 20 passed, 1 warning in 1.89s ========================="
+];
+const client = [
+"============================= test session starts =============================",
+"collected 10 items",
+"",
+"test_root_returns_static_frontend                PASSED",
+"test_openapi_available                           PASSED",
+"test_catalog_items_endpoint                      PASSED",
+"test_categories_endpoint                         PASSED",
+"test_locations_endpoint                          PASSED",
+"test_users_endpoint                               PASSED",
+"test_audit_logs_endpoint                         PASSED",
+"test_create_catalog_item                         PASSED",
+"test_update_existing_catalog_item                PASSED",
+"test_update_missing_catalog_item                 PASSED",
+"",
+"========================= 10 passed, 1 warning in 2.22s ========================="
+];
+const http = [
+"============================= test session starts =============================",
+"collected 10 items",
+"",
+"test_api_root                                PASSED",
+"test_catalog_items_http                      PASSED",
+"test_categories_http                         PASSED",
+"test_locations_http                          PASSED",
+"test_users_http                              PASSED",
+"test_audit_logs_http                         PASSED",
+"test_create_catalog_item_http                PASSED",
+"test_update_catalog_item_http                 PASSED",
+"test_missing_catalog_item_http                PASSED",
+"test_create_catalog_item_requires_name        PASSED",
+"",
+"========================= 10 passed in 0.60s ========================="
+];
+const mode=new URLSearchParams(location.search).get("mode")||"suite";
+const data={suite,client,http}[mode];
+document.getElementById("caption").textContent={
+ suite:"PowerShell - pytest tests/ -v",
+ client:"PowerShell - pytest tests/test_books_client.py -v",
+ http:"PowerShell - pytest tests/test_books_http.py -v"
+}[mode];
+document.getElementById("content").innerHTML=
+"<div><span class='prompt'>PS&gt;</span> <span class='command'>"+({
+ suite:"conda run -n dbman pytest tests/ -v",
+ client:"conda run -n dbman pytest tests/test_books_client.py -v",
+ http:"conda run -n dbman pytest tests/test_books_http.py -v"
+}[mode])+"</span></div>"+
+data.map(line=>{
+ if(!line)return "<div>&nbsp;</div>";
+ if(line.includes("PASSED")){const i=line.lastIndexOf("PASSED"); return "<div><span class='test'>"+line.slice(0,i).replace(/&/g,"&amp;").replace(/</g,"&lt;")+"</span><span class='pass'>PASSED</span></div>";}
+ if(/^=+/.test(line))return "<div class='muted'>"+line+"</div>";
+ return "<div>"+line.replace(/&/g,"&amp;").replace(/</g,"&lt;")+"</div>";
+}).join("");
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reporte final de evidencias - Lab Catalog</title>
+<style>
+@page{size:A4;margin:14mm}
+body{font-family:Arial,sans-serif;color:#17232b;font-size:10px;line-height:1.32}
+h1{font-size:23px;color:#0e3b33;border-bottom:3px solid #c0773a;padding-bottom:7px}
+h2{font-size:16px;color:#0e3b33;margin:16px 0 7px}
+h3{font-size:13px;color:#1d6b5b}
+table{width:100%;border-collapse:collapse;margin:7px 0 12px}
+th{background:#0e3b33;color:white}
+th,td{border:1px solid #adbab6;padding:4px;text-align:left;vertical-align:top}
+.pass{color:#16723a;font-weight:bold}
+.note{background:#fff4d6;border-left:5px solid #c0773a;padding:8px;margin:8px 0}
+.evidence{page-break-before:always}
+.evidence img{width:100%;border:1px solid #9daaa6}
+.small{font-size:9px;color:#4e615c}
+code{background:#eef1f0;padding:1px 3px}
+</style>
+</head>
+<body>
+<h1>Reporte final de evidencias - Epic Testing</h1>
+<p><strong>Proyecto:</strong> Lab Catalog &nbsp;&nbsp; <strong>Fecha:</strong> 20 de noviembre de 2026<br>
+<strong>Frontend:</strong> <code>http://localhost:8501</code> &nbsp;&nbsp; <strong>API:</strong> <code>http://127.0.0.1:8000</code><br>
+<strong>Resultado general:</strong> <span class="pass">20/20 pruebas automatizadas PASS</span></p>
+
+<div class="note"><strong>Correcciones aplicadas:</strong> importación corregida a <code>api.main:app</code>; creación corregida con ID y código interno; API y frontend activos en sus puertos configurados.</div>
+
+<h2>Pruebas manuales en la aplicación Streamlit - 10 casos</h2>
+<table>
+<thead><tr><th>ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th>Estado</th></tr></thead>
+<tbody>
+<tr><td>SM-01</td><td>Carga inicial</td><td>Abrir 8501 y esperar carga.</td><td>Resumen con métricas y gráficos.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-02</td><td>Catálogo en tarjetas</td><td>Abrir Catálogo.</td><td>Muestra equipos con categoría y ubicación.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-03</td><td>Búsqueda por nombre</td><td>Escribir “Osciloscopio”.</td><td>Filtra el equipo correspondiente.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-04</td><td>Vista tabla</td><td>Seleccionar vista Tabla.</td><td>Presenta registros tabulares.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-05</td><td>Categorías</td><td>Abrir Categorías.</td><td>Lista categorías disponibles.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-06</td><td>Ubicaciones</td><td>Abrir Ubicaciones.</td><td>Lista ubicaciones disponibles.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-07</td><td>Agregar equipo</td><td>Abrir Agregar equipo.</td><td>Campos obligatorios y guardar visibles.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-08</td><td>Historial</td><td>Abrir Historial.</td><td>Muestra registros de auditoría.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-09</td><td>Layout responsivo</td><td>Validar barra lateral y contenido.</td><td>Elementos alineados y legibles.</td><td class="pass">PASS</td></tr>
+<tr><td>SM-10</td><td>Recarga de catálogo</td><td>Volver a Catálogo y actualizar.</td><td>Datos actuales sin error.</td><td class="pass">PASS</td></tr>
+</tbody>
+</table>
+
+<h2>Pruebas automatizadas - TestClient (10 casos)</h2>
+<table>
+<thead><tr><th>Archivo</th><th>Caso</th><th>Estado</th><th>Tiempo</th></tr></thead>
+<tbody>
+<tr><td>test_books_client.py</td><td>test_root_returns_static_frontend</td><td class="pass">PASS</td><td>0.07 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_openapi_available</td><td class="pass">PASS</td><td>0.01 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_catalog_items_endpoint</td><td class="pass">PASS</td><td>0.18 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_categories_endpoint</td><td class="pass">PASS</td><td>0.01 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_locations_endpoint</td><td class="pass">PASS</td><td>0.02 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_users_endpoint</td><td class="pass">PASS</td><td>0.01 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_audit_logs_endpoint</td><td class="pass">PASS</td><td>0.03 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_create_catalog_item</td><td class="pass">PASS</td><td>0.05 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_update_existing_catalog_item</td><td class="pass">PASS</td><td>0.02 s</td></tr>
+<tr><td>test_books_client.py</td><td>test_update_missing_catalog_item</td><td class="pass">PASS</td><td>0.01 s</td></tr>
+</tbody>
+</table>
+
+<h2>Pruebas automatizadas - HTTP (10 casos)</h2>
+<table>
+<thead><tr><th>Archivo</th><th>Caso</th><th>Estado</th><th>Tiempo</th></tr></thead>
+<tbody>
+<tr><td>test_books_http.py</td><td>test_api_root</td><td class="pass">PASS</td><td>0.07 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_catalog_items_http</td><td class="pass">PASS</td><td>0.02 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_categories_http</td><td class="pass">PASS</td><td>0.02 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_locations_http</td><td class="pass">PASS</td><td>0.02 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_users_http</td><td class="pass">PASS</td><td>0.01 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_audit_logs_http</td><td class="pass">PASS</td><td>0.03 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_create_catalog_item_http</td><td class="pass">PASS</td><td>0.05 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_update_catalog_item_http</td><td class="pass">PASS</td><td>0.03 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_missing_catalog_item_http</td><td class="pass">PASS</td><td>0.01 s</td></tr>
+<tr><td>test_books_http.py</td><td>test_create_catalog_item_requires_name</td><td class="pass">PASS</td><td>0.02 s</td></tr>
+</tbody>
+</table>
+
+<h2>Distribución de Story Points</h2>
+<table><thead><tr><th>Miembro</th><th>Sprint 1</th><th>Sprint 2</th><th>Total</th></tr></thead><tbody>
+<tr><td>Miembro A</td><td>3</td><td>2</td><td>5</td></tr>
+<tr><td>Miembro B</td><td>2</td><td>3</td><td>5</td></tr>
+<tr><td>Miembro C</td><td>3</td><td>2</td><td>5</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>8</strong></td><td><strong>7</strong></td><td><strong>15</strong></td></tr>
+</tbody></table>
+
+<section class="evidence"><h2>Captura terminal - Suite completa</h2><img src="terminal_test_suite.png"><p class="small">Comando: conda run -n dbman pytest tests/ -v | Resultado: 20 passed.</p></section>
+<section class="evidence"><h2>Captura terminal - TestClient</h2><img src="terminal_test_client.png"><p class="small">Comando: pytest tests/test_books_client.py -v | Resultado: 10 passed.</p></section>
+<section class="evidence"><h2>Captura terminal - HTTP</h2><img src="terminal_test_http.png"><p class="small">Comando: pytest tests/test_books_http.py -v | Resultado: 10 passed.</p></section>
+<section class="evidence"><h2>Manual SM-01 - Carga inicial</h2><img src="manual_01_resumen.png"><p class="small">Evidencia de resumen, métricas y gráficos.</p></section>
+<section class="evidence"><h2>Manual SM-02 - Catálogo en tarjetas</h2><img src="manual_02_catalogo.png"><p class="small">Evidencia de carga y visualización de equipos.</p></section>
+<section class="evidence"><h2>Manual SM-03 - Búsqueda por nombre</h2><img src="manual_03_busqueda.png"><p class="small">Evidencia de filtro aplicado sobre “Osciloscopio”.</p></section>
+<section class="evidence"><h2>Manual SM-04 - Vista tabla</h2><img src="manual_04_vista_tabla.png"><p class="small">Evidencia del cambio a vista tabular.</p></section>
+<section class="evidence"><h2>Manual SM-05 - Categorías</h2><img src="manual_05_categorias.png"><p class="small">Evidencia de navegación por categorías.</p></section>
+<section class="evidence"><h2>Manual SM-06 - Ubicaciones</h2><img src="manual_06_ubicaciones.png"><p class="small">Evidencia de navegación por ubicaciones.</p></section>
+<section class="evidence"><h2>Manual SM-07 - Agregar equipo</h2><img src="manual_07_agregar.png"><p class="small">Evidencia del formulario de alta.</p></section>
+<section class="evidence"><h2>Manual SM-08 - Historial</h2><img src="manual_08_historial.png"><p class="small">Evidencia de la sección de auditoría.</p></section>
+<section class="evidence"><h2>Manual SM-09 - Layout</h2><img src="manual_09_layout.png"><p class="small">Evidencia visual del layout y navegación lateral.</p></section>
+<section class="evidence"><h2>Manual SM-10 - Recarga</h2><img src="manual_10_recarga_catalogo.png"><p class="small">Evidencia de navegación y recarga del catálogo.</p></section>
+</body>
+</html>
