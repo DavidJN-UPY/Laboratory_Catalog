@@ -105,6 +105,11 @@ td.nil{color:#aab8b3}
 .rel .none{color:var(--muted);border-style:dashed;justify-content:center}
 .drawer dt{font-size:13px;color:var(--muted);margin-top:16px}
 .drawer dd{font-weight:500;word-break:break-word}
+.photo{margin:8px 0 4px}
+.photo img{display:block;width:100%;max-height:260px;object-fit:contain;background:#f8faf9;border:1px solid var(--line);border-radius:12px}
+.photo figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.photo figcaption a{color:inherit}
+.thumb{width:34px;height:26px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:10px;border:1px solid var(--line)}
 
 @media (max-width:860px){
   body{flex-direction:column}
@@ -177,7 +182,9 @@ const PAGE=20;
 
 const LABELS={name:'Nombre',building:'Edificio',lab:'Laboratorio',shelf_cabinet:'Anaquel / estante',__n:'Equipos',
   email:'Correo',role:'Rol',description:'Descripción',status:'Estado',action:'Acción',
-  created_at:'Creado',updated_at:'Actualizado',quantity:'Cantidad',brand:'Marca',model:'Modelo',serial_number:'No. de serie'};
+  created_at:'Creado',updated_at:'Actualizado',quantity:'Cantidad',brand:'Marca',model:'Modelo',serial_number:'No. de serie',
+  internal_code:'Código interno',standardized_name:'Nombre estándar',technical_description:'Descripción técnica',
+  full_name:'Nombre completo',action_performed:'Acción',timestamp:'Fecha',modified_attributes:'Cambios'};
 // Columnas que apuntan a otra tabla: se muestra el nombre en vez del número
 const LOOK={
   category_id:{src:'categories',label:'Categoría',text:r=>r.name},
@@ -197,7 +204,7 @@ function cell(k,v){
   const t=resolve(k,v); return t!=null?esc(t):fmt(k,v);
 }
 
-const state={view:'home',data:{},q:'',sort:null,page:0,loaded:false};
+const state={view:'home',data:{},q:'',sort:null,page:0,loaded:false,credits:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const human=k=>LABELS[k]||(()=>{const s=k.replace(/_/g,' ').replace(/\bid\b/i,'ID');return s.charAt(0).toUpperCase()+s.slice(1)})();
@@ -230,8 +237,12 @@ async function load(id){
   }
   return r.json();
 }
+// Fotos: /img/<internal_code>.jpg y sus créditos en /img/credits.json
+const imgUrl=code=>`${API_BASE}/img/${encodeURIComponent(code)}.jpg`;
+const hasImg=r=>r&&r.internal_code&&state.credits[r.internal_code];
 async function loadAll(){
   $('reload').classList.add('spin'); let ok=0;
+  state.credits=await fetch(API_BASE+'/img/credits.json').then(r=>r.ok?r.json():{}).catch(()=>({}));
   await Promise.all(SECTIONS.map(async s=>{
     try{state.data[s.id]=await load(s.id);ok++}catch(e){state.data[s.id]={error:e.message}}
   }));
@@ -272,7 +283,7 @@ function renderTable(sec){
   if(!d.length) return $('view').innerHTML=`<div class="card empty">${ic('box')}<p><b>Aún no hay registros</b></p><p>Cuando agregues datos en la base, aparecerán aquí.</p></div>`;
 
   const all=Object.keys(d[0]).filter(k=>!HIDDEN.test(k));
-  const main=all.find(k=>!isId(k));
+  const main=all.find(k=>/(^|_)name$/i.test(k))||all.find(k=>!isId(k));
   state.own=all[0];
   const rel=REL[sec.id], items=state.data['catalog-items'];
   // Los textos largos (p. ej. descripción técnica) solo se ven en el panel de detalle,
@@ -290,7 +301,8 @@ function renderTable(sec){
   const head=cols.map(k=>`<th data-k="${k}">${lbl(k)}${state.sort?.k===k?`<span class="ar">${state.sort.dir>0?'↑':'↓'}</span>`:''}</th>`).join('');
   const body=slice.map(r=>`<tr data-i="${r.__i}">${cols.map(k=>{
     const v=r[k], cls=k===state.own?'id':k===main?'main':(v==null||v===''?'nil':'');
-    return `<td class="${cls}">${cell(k,v)}</td>`;}).join('')}</tr>`).join('');
+    const th=k===main&&hasImg(r)?`<img class="thumb" src="${imgUrl(r.internal_code)}" alt="" loading="lazy">`:'';
+    return `<td class="${cls}">${th}${cell(k,v)}</td>`;}).join('')}</tr>`).join('');
   $('view').innerHTML=`<div class="card"><div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body||`<tr><td colspan="${cols.length}" class="empty" style="white-space:normal">Ningún resultado para “${esc(state.q)}”.</td></tr>`}</tbody></table></div>
   <div class="pager"><span>${rows.length} registro${rows.length===1?'':'s'}</span><span class="sp"></span>
   <button id="prev" ${state.page===0?'disabled':''}>Anterior</button><span>${state.page+1} de ${pages}</span><button id="next" ${state.page>=pages-1?'disabled':''}>Siguiente</button></div></div>`;
@@ -302,7 +314,13 @@ function openDrawer(i){
   const keys=state.cols;
   $('dTitle').textContent=String(r[state.main]??sec.label);
   const rel=REL[sec.id], items=state.data['catalog-items'];
-  let html='<dl>'+keys.map(k=>`<dt>${lbl(k)}</dt><dd>${cell(k,r[k])}</dd>`).join('')+'</dl>';
+  let html='';
+  if(hasImg(r)){
+    const c=state.credits[r.internal_code];
+    html+=`<figure class="photo"><img src="${imgUrl(r.internal_code)}" alt="${esc(r[state.main]??'')}">
+      ${c.source?`<figcaption>${esc(c.source)}</figcaption>`:''}</figure>`;
+  }
+  html+='<dl>'+keys.map(k=>`<dt>${lbl(k)}</dt><dd>${cell(k,r[k])}</dd>`).join('')+'</dl>';
   if(rel&&Array.isArray(items)){
     const mine=items.filter(x=>x[rel.fk]===r[state.own]);
     const im=Object.keys(items[0]||{}).find(k=>!isId(k)&&!HIDDEN.test(k));

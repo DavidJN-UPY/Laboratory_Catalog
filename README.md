@@ -8,6 +8,7 @@ Sistema de inventario para los equipos del **Laboratorio de Manufactura de PCB**
 * **API REST (FastAPI)** para consultar, crear y editar equipos.
 * **Frontend web (HTML)**, servido por la misma API.
 * **Frontend Streamlit** con resumen, catálogo, búsqueda, filtros, formulario de alta/edición e historial.
+* **Fotos de cada equipo** en las fichas de ambos frontends.
 
 ```text
    Navegador ──► http://127.0.0.1:8000  (HTML)  ─┐
@@ -155,6 +156,17 @@ Abre http://127.0.0.1:8501. La barra lateral debe decir **🟢 API conectada**.
 | POST | `/catalog-items` | Crea un equipo (si no envías `internal_code`, se genera automáticamente) |
 | PUT | `/catalog-items/{item_id}` | Actualiza un equipo |
 | GET | `/audit-logs` | Historial de cambios |
+| GET | `/img/{internal_code}.jpg` | Foto del equipo |
+| GET | `/img/credits.json` | Lista de fotos disponibles y su origen |
+
+---
+
+## 🖼️ Fotos de los equipos
+
+Las fotos están en `frontend/img/` y se llaman igual que el **código interno** del equipo (por ejemplo `LAB-OSC-01.jpg`). No se guardan en la base de datos, así que no hace falta migrar nada.
+
+* **Agregar la foto de un equipo nuevo:** guarda la imagen como `frontend/img/<internal_code>.jpg` y añade su entrada a `frontend/img/credits.json`. Si un equipo no tiene foto, simplemente no se muestra.
+* Las fotos actuales corresponden a los modelos reales del inventario y las proporcionó el equipo. La relación foto–equipo está en [`frontend/img/CREDITS.md`](frontend/img/CREDITS.md).
 
 ---
 
@@ -184,7 +196,8 @@ Laboratory_Catalog/
 │   └── lab_catalog.py        # Explorador Streamlit alternativo
 ├── frontend/
 │   ├── app.py                # Frontend Streamlit principal
-│   └── index.html            # Frontend web (HTML + JS)
+│   ├── index.html            # Frontend web (HTML + JS)
+│   └── img/                  # Fotos de equipos (<internal_code>.jpg) y sus créditos
 ├── .streamlit/
 │   └── config.toml           # Puerto (8501) y tema de Streamlit
 ├── data/                     # CSV con los datos de ejemplo

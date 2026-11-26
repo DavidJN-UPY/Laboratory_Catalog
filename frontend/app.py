@@ -1,8 +1,13 @@
+import json
 import os
+from pathlib import Path
+
 import pandas as pd
 import requests
 import streamlit as st
+from PIL import Image, ImageOps
 
+IMG_DIR = Path(__file__).resolve().parent / "img"   # fotos: img/<internal_code>.jpg
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 HIDDEN = ("pass", "hash", "token", "secret")
 FK_IDS = ("category_id", "location_id")
@@ -60,6 +65,38 @@ st.markdown("""
 
 
 # ---------- Utilidades ----------
+@st.cache_data
+def photo_credits():
+    try:
+        return json.loads((IMG_DIR / "credits.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def photo_path(row):
+    code = row.get("internal_code")
+    path = IMG_DIR / f"{code}.jpg" if isinstance(code, str) and code else None
+    return path if path and path.is_file() else None
+
+
+@st.cache_data
+def card_thumb(path):
+    """Recorta a 4:3 para que todas las tarjetas tengan la misma altura."""
+    with Image.open(path) as im:
+        return ImageOps.fit(im.convert("RGB"), (480, 360))
+
+
+def show_photo(row, caption=True):
+    path = photo_path(row)
+    if not path:
+        return
+    c = photo_credits().get(row.get("internal_code"), {})
+    cap = c.get("source") if caption else None
+    st.image(str(path) if caption else card_thumb(str(path)), width="stretch")
+    if cap:
+        st.caption(cap)
+
+
 def is_hidden(col):
     return any(h in col.lower() for h in HIDDEN)
 
@@ -285,6 +322,7 @@ def detail(item_id):
         if status_col:
             chips.append(f"{lbl(status_col)}: **{row[status_col]}**")
         st.markdown("  &nbsp;&nbsp;|&nbsp;&nbsp;  ".join(chips))
+        show_photo(row)
         ficha(row)
         st.button("Editar equipo", key="edit_btn", type="primary",
                   on_click=lambda: st.session_state.update(edit_item=item_id))
@@ -312,6 +350,7 @@ def group_dialog(fk, value, title):
     st.caption(f"{len(sub)} equipos. Abre uno para ver su ficha técnica.")
     for _, r in sub.iterrows():
         with st.expander(str(r[name_c])):
+            show_photo(r)
             ficha(r, heading=False)
 
 
@@ -419,6 +458,7 @@ elif section == "Catálogo":
         cols = st.columns(3)
         for n, r in enumerate(df.head(30).to_dict("records")):
             with cols[n % 3].container(border=True):
+                show_photo(r, caption=False)
                 st.markdown(f"**{r[name_c]}**")
                 if r.get("internal_code"):
                     st.caption(f"🔖 {r['internal_code']}")

@@ -4,6 +4,7 @@ import uuid
 from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import inspect, text
 from scripts.db_config import get_engine
 
@@ -23,6 +24,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Fotos de los equipos: frontend/img/<internal_code>.jpg  ->  http://127.0.0.1:8000/img/<internal_code>.jpg
+app.mount("/img", StaticFiles(directory=BASE_DIR.parent / "frontend" / "img"), name="img")
 
 engine = get_engine()
 

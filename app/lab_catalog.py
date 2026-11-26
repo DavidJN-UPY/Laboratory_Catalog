@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 import requests
@@ -57,6 +58,16 @@ st.markdown("""
         <p>Explorador interactivo: selecciona una categoría o ubicación para ver los equipos en detalle</p>
     </div>
 """, unsafe_allow_html=True)
+
+IMG_DIR = Path(__file__).resolve().parents[1] / "frontend" / "img"
+
+
+def mostrar_foto(equipo):
+    """Muestra frontend/img/<internal_code>.jpg si existe."""
+    ruta = IMG_DIR / f"{equipo.get('internal_code')}.jpg"
+    if ruta.is_file():
+        st.image(str(ruta), width=420, caption="Foto del equipo")
+
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 
@@ -161,6 +172,7 @@ try:
                     if item_selected_rows:
                         item_data = items_filtrados.iloc[item_selected_rows[0]]
                         st.success(f"📌 **Ficha Técnica Detallada:** {item_data.get('standardized_name', 'Equipo')}")
+                        mostrar_foto(item_data)
                         st.json(item_data.to_dict())
                 else:
                     st.info("No hay equipos asignados a esta categoría todavía.")
@@ -242,6 +254,7 @@ try:
                     <h3>Detalles del Registro Seleccionado</h3>
                 </div>
                 """, unsafe_allow_html=True)
+                mostrar_foto(equipo_sel)
                 st.json(equipo_sel.to_dict())
 
         # ==========================================

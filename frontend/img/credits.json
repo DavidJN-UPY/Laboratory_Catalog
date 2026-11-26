@@ -1,0 +1,42 @@
+{
+  "LAB-BRD-01": {
+    "file": "LAB-BRD-01.jpg",
+    "original": "PINTARRON_BLANCO.webp",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-GEN-01": {
+    "file": "LAB-GEN-01.jpg",
+    "original": "2005b_image_1.jpg",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-GEN-02": {
+    "file": "LAB-GEN-02.jpg",
+    "original": "AFG-2105.webp",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-OSC-01": {
+    "file": "LAB-OSC-01.jpg",
+    "original": "TBS 1032B.jpeg",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-PC-01": {
+    "file": "LAB-PC-01.jpg",
+    "original": "COMPUTADORA_DELL.avif",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-PSU-01": {
+    "file": "LAB-PSU-01.jpg",
+    "original": "GPS-3303.webp",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-SCR-01": {
+    "file": "LAB-SCR-01.jpg",
+    "original": "PANTALLA_LG.jpeg",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  },
+  "LAB-SCR-02": {
+    "file": "LAB-SCR-02.jpg",
+    "original": "PANTALLA_PROYECTOR.jpg",
+    "source": "Foto del equipo (proporcionada por Team 1)"
+  }
+}
